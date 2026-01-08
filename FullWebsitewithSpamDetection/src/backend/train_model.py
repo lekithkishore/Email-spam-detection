@@ -15,15 +15,30 @@ def main():
     print(" EMAIL SPAM DETECTION - MODEL TRAINING ")
     print("=" * 60 + "\n")
     
-    # Check if dataset exists
-    dataset_path = 'spam mail.csv'
+    # Check if dataset exists (try multiple locations)
+    # Try current directory first, then parent directories
+    possible_paths = [
+        'spam mail.csv',
+        '../spam mail.csv',
+        '../../spam mail.csv',
+        'FullWebsitewithSpamDetection/spam mail.csv'
+    ]
     
-    if not os.path.exists(dataset_path):
-        print(f"ERROR: Dataset '{dataset_path}' not found!")
-        print("\nPlease make sure 'spam mail.csv' is in the same directory.")
+    dataset_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            dataset_path = path
+            break
+    
+    if not dataset_path:
+        print(f"ERROR: Dataset 'spam mail.csv' not found!")
+        print("\nPlease make sure 'spam mail.csv' is accessible.")
+        print("Tried locations:", possible_paths)
         print("Dataset should have two columns: Category, Messages")
         print("Category values should be: 'ham' or 'spam'")
         sys.exit(1)
+    
+    print(f"Found dataset at: {dataset_path}")
     
     # Initialize detector
     detector = SpamDetector()

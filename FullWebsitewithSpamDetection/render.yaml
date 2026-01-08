@@ -1,0 +1,30 @@
+services:
+  # Backend API Service
+  - type: web
+    name: spam-detection-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: chmod +x render_build.sh && ./render_build.sh
+    startCommand: gunicorn app:app --config gunicorn_config.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_DEBUG
+        value: "False"
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /api/health
+
+  # Frontend Static Site
+  - type: web
+    name: spam-detection-frontend
+    env: static
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    envVars:
+      - key: VITE_API_URL
+        sync: false  # Set this manually in Render dashboard
+

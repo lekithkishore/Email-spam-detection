@@ -9,7 +9,9 @@ from spam_detector import SpamDetector
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+# Enable CORS for React frontend - allow all origins in production
+# For production, you can restrict to specific domains
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Initialize spam detector
 detector = SpamDetector()
@@ -105,10 +107,14 @@ def retrain():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    
     print("=" * 60)
     print("Email Spam Detection API Server")
     print("=" * 60)
-    print("Server running on: http://localhost:5000")
-    print("Health check: http://localhost:5000/api/health")
+    print(f"Server running on: http://0.0.0.0:{port}")
+    print(f"Health check: http://0.0.0.0:{port}/api/health")
     print("=" * 60)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=debug, host='0.0.0.0', port=port)
